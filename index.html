@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>隱含波動度與笑狀波幅</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+</head>
+
+<body>
+    <main class="app">
+        <section class="hero">
+            <p class="eyebrow">Implied Volatility Calculator</p>
+            <h1>隱含波動度<br>笑狀波幅</h1>
+            <p class="subtitle">
+                輸入任意組履約價與市場價格，系統會用二分法反推出各點 IV，並用 Plotly 畫出互動式曲線。
+            </p>
+        </section>
+
+        <form id="ivForm">
+            <section class="card">
+                <div class="section-title">
+                    <span>商品類型</span>
+                </div>
+
+                <div class="segmented">
+                    <label>
+                        <input type="radio" name="option_type" value="stock">
+                        <span>股票選擇權</span>
+                    </label>
+
+                    <label>
+                        <input type="radio" name="option_type" value="futures" checked>
+                        <span>期貨選擇權</span>
+                    </label>
+                </div>
+
+                <div class="section-title">
+                    <span>選擇權類型</span>
+                </div>
+
+                <div class="segmented">
+                    <label>
+                        <input type="radio" name="option_side" value="call" checked>
+                        <span>Call</span>
+                    </label>
+
+                    <label>
+                        <input type="radio" name="option_side" value="put">
+                        <span>Put</span>
+                    </label>
+                </div>
+
+                <div class="section-title">
+                    <span>基本參數</span>
+                </div>
+
+                <div class="form-grid">
+                    <label class="field">
+                        <span id="underlyingLabel">期貨價格</span>
+                        <input
+                            type="number"
+                            step="any"
+                            id="underlyingPrice"
+                            value="35457">
+                    </label>
+
+                    <label class="field">
+                        <span>無風險利率（%）</span>
+                        <input
+                            type="number"
+                            step="any"
+                            id="riskFreeRate"
+                            value="1">
+                    </label>
+
+                    <label class="field">
+                        <span>到期期限（天）</span>
+                        <input
+                            type="number"
+                            step="any"
+                            id="days"
+                            value="2">
+                    </label>
+                </div>
+            </section>
+
+            <section class="smile-card">
+                <div class="result-title">
+                    <span>市場價格輸入</span>
+                    <small id="marketPriceTitle">Call 市場價格</small>
+                </div>
+
+                <p class="note top-note">
+                    左邊輸入履約價 K，右邊輸入該履約價的市場價格，也就是權利金。可以新增任意組數。
+                </p>
+
+                <div class="market-table-header">
+                    <div>履約價 K</div>
+                    <div id="marketPriceHeader">Call 市場價格</div>
+                    <div></div>
+                </div>
+
+                <div id="marketRows" class="market-rows">
+                    <div class="market-row">
+                        <input type="number" step="any" class="strike-input" value="35100" placeholder="履約價">
+                        <input type="number" step="any" class="price-input" value="221" placeholder="市場價格">
+                        <button type="button" class="remove-row-btn">刪除</button>
+                    </div>
+
+                    <div class="market-row">
+                        <input type="number" step="any" class="strike-input" value="35200" placeholder="履約價">
+                        <input type="number" step="any" class="price-input" value="249" placeholder="市場價格">
+                        <button type="button" class="remove-row-btn">刪除</button>
+                    </div>
+
+                    <div class="market-row">
+                        <input type="number" step="any" class="strike-input" value="35300" placeholder="履約價">
+                        <input type="number" step="any" class="price-input" value="283" placeholder="市場價格">
+                        <button type="button" class="remove-row-btn">刪除</button>
+                    </div>
+
+                    <div class="market-row">
+                        <input type="number" step="any" class="strike-input" value="35400" placeholder="履約價">
+                        <input type="number" step="any" class="price-input" value="317" placeholder="市場價格">
+                        <button type="button" class="remove-row-btn">刪除</button>
+                    </div>
+
+                    <div class="market-row">
+                        <input type="number" step="any" class="strike-input" value="35500" placeholder="履約價">
+                        <input type="number" step="any" class="price-input" value="364" placeholder="市場價格">
+                        <button type="button" class="remove-row-btn">刪除</button>
+                    </div>
+                </div>
+
+                <button type="button" class="add-row-btn" id="addRowBtn">
+                    ＋ 新增一列
+                </button>
+
+                <button class="calculate-btn" type="submit">
+                    反推 IV 並畫圖
+                </button>
+            </section>
+        </form>
+
+        <section class="notice error" id="errorBox" style="display: none;"></section>
+
+        <section class="result-card">
+            <div class="result-title">
+                <span>笑狀波幅圖</span>
+                <small>Plotly</small>
+            </div>
+
+            <div class="plotly-chart" id="volSmileChart"></div>
+
+            <div class="iv-list" id="ivList"></div>
+
+            <p class="note">
+                如果顯示「無法計算」，通常代表輸入的市場價格低於該選擇權的內涵價值，因此無法反推出合理的隱含波動度。
+            </p>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html>
